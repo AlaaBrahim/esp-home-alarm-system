@@ -87,7 +87,7 @@ void loop()
   {
     String message = io.recieveCommand();
     String reply = commandManager.executeCommand(message);
-    io.replyCommand("-- Reply : " + reply);
+    io.replyCommand(reply);
   }
   else
   {
