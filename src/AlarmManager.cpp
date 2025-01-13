@@ -1,6 +1,7 @@
 #include "AlarmManager.h"
 #include "Printer.h"
 #include "Io.h"
+#include "ConfigManager.h"
 
 AlarmManager::AlarmManager() {}
 
@@ -64,12 +65,30 @@ void AlarmManager::trigger()
     digitalWrite(doorPin, LOW);
 }
 
+int AlarmManager::readAnalog()
+{
+    printDebug("Reading analog pin" + String(analogPin) + "value");
+    int analogValue = analogRead(analogPin);
+    printDebug("Analog value: " + String(analogValue));
+    return analogValue;
+}
+
 AlarmState AlarmManager::getState()
 {
     printDebug("Getting the alarm state");
     const unsigned long measureInterval = 300; // Time between measurements in milliseconds
     const int measureCount = 10;               // Number of measurements to take
-    const int threshold = 1024 * 1.5 / 3.3;    // Threshold for determining if the LED is on
+
+    // Read threshold from config file
+    String thresholdStr = ConfigManager::getConfig("threshold");
+    if (thresholdStr == "")
+    {
+        printDebug("Threshold not set");
+        printDebug("Using default threshold");
+        thresholdStr = "465";
+    }
+
+    int threshold = thresholdStr.toInt(); // Threshold for determining if the LED is on
 
     int onCount = 0;
     int offCount = 0;

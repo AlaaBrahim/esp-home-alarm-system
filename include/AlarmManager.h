@@ -21,6 +21,7 @@ public:
     static void scream();
     static void mute();
     static void trigger();
+    static int readAnalog();
     static AlarmState getState();
     static void thiefDetection(Io io);
 
