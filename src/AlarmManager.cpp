@@ -86,6 +86,7 @@ AlarmState AlarmManager::getState()
         printDebug("Threshold not set");
         printDebug("Using default threshold");
         thresholdStr = "465";
+        ConfigManager::setConfig("threshold", thresholdStr);
     }
 
     int threshold = thresholdStr.toInt(); // Threshold for determining if the LED is on
