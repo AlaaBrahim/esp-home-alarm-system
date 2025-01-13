@@ -8,8 +8,8 @@ class Command
 public:
     Command();
     Command(String command, String issuer);
-    bool isAdmin();
-    bool isUser();
+    bool isCommandIssuerAdmin();
+    bool isCommandIssuerNormalUser();
     String getCommand() { return command; }
     String getIssuer() { return issuer; }
     void setCommand(String command);
