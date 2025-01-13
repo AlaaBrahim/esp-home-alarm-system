@@ -12,10 +12,13 @@
 #include "FileManager.h"
 #include "AlarmManager.h"
 #include "HumanDetector.h"
+#include "Command.h"
+#include "Alexa.h"
 
 Io io = Io();
 CommandManager commandManager = CommandManager();
 HumanDetector humanDetector = HumanDetector();
+Alexa alexa = Alexa();
 
 void setupOTA()
 {
@@ -71,12 +74,16 @@ void setup()
   printDebug("Setup OTA");
   setupOTA();
 
+  printDebug("Setup Alexa");
+  alexa.setup(&io);
+
   FileManager::setup();
 }
 
 void loop()
 {
   ArduinoOTA.handle();
+  alexa.loop();
 
   AlarmManager::thiefDetection(io);
   if (humanDetector.checkForHuman())

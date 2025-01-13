@@ -7,5 +7,6 @@
 #define BAUD_RATE 115200
 
 #define CONFIG_FILE "config.json"
+#define ALEXA_ALARM_DEVICE_NAME "Alarm"
 
 #endif
