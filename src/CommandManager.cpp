@@ -6,6 +6,7 @@
 #include "UserManager.h"
 #include "AlarmManager.h"
 #include "HomeCCTV.h"
+#include "ConfigManager.h"
 
 CommandManager::CommandManager() {}
 
@@ -27,6 +28,31 @@ String CommandManager::executeCommand(String command)
     {
         command.remove(0, 4);
         return FileManager::readFromFile(command);
+    }
+    else if (command.startsWith("config"))
+    {
+        command.remove(0, 7);
+        int spaceIndex = command.indexOf(" ");
+        String key = command.substring(0, spaceIndex);
+        command.remove(0, spaceIndex + 1);
+        String value = command;
+        ConfigManager::setConfig(key, value);
+        return ("Config set");
+    }
+    else if (command.startsWith("getconfig"))
+    {
+        command.remove(0, 10);
+        return ConfigManager::getConfig(command);
+    }
+    else if (command.startsWith("removeconfig"))
+    {
+        command.remove(0, 13);
+        ConfigManager::removeConfig(command);
+        return ("Config removed");
+    }
+    else if (command.startsWith("getconfigs"))
+    {
+        return ConfigManager::getConfigs();
     }
     else if (command.startsWith("write"))
     {
