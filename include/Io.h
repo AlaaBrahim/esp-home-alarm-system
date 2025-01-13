@@ -12,6 +12,7 @@ public:
     void setup();
     bool newCommandRecieved();
     String recieveCommand();
+    String getCommandIssuer();
     void replyCommand(String message);
     void broadcastMessage(String message);
 

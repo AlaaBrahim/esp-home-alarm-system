@@ -8,7 +8,7 @@ class CommandManager
 {
 public:
     CommandManager();
-    String executeCommand(String command);
+    String executeCommand(String command, String issuer);
 };
 
 #endif

@@ -24,6 +24,15 @@ String Io::recieveCommand()
     return "";
 }
 
+String Io::getCommandIssuer()
+{
+    if (SERIAL && serialRecieved)
+        return "serial";
+    if (TELEGRAM && telegramRecieved)
+        return telegramHandler.getNewMessageChatID();
+    return "";
+}
+
 bool Io::newCommandRecieved()
 {
     if (SERIAL && newSerialRecieved())
