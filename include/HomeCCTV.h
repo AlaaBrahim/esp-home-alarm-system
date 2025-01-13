@@ -11,6 +11,7 @@ public:
     static void disable();
 
 private:
+    static String getIp();
     static void sendRequest(const String &url);
 };
 

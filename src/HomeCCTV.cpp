@@ -1,14 +1,14 @@
 #include "HomeCCTV.h"
-#include "config.h"
 #include "secrets.h"
 #include "printer.h"
+#include "ConfigManager.h"
 
 HomeCCTV::HomeCCTV() {}
 
 void HomeCCTV::enable()
 {
     printDebug("Enabling Home CCTV motion detection");
-    String url = "http://" + String(HOME_CCTV_IP) + "/set_alarm.cgi?next_url=alarm.htm&motion_armed=1&input_armed=0&motion_sensitivity=3&motion_compensation=1&http=0&http_url=&preset=0&iolinkage=1&mail=0&upload_interval=0&ioin_level=1&ioout_level=0&schedule_enable=0&schedule_sun_0=0&schedule_sun_1=0&schedule_sun_2=0&schedule_mon_0=0&schedule_mon_1=0&schedule_mon_2=0&schedule_tue_0=0&schedule_tue_1=0&schedule_tue_2=0&schedule_wed_0=0&schedule_wed_1=0&schedule_wed_2=0&schedule_thu_0=0&schedule_thu_1=0&schedule_thu_2=0&schedule_fri_0=0&schedule_fri_1=0&schedule_fri_2=0&schedule_sat_0=0&schedule_sat_1=0&schedule_sat_2=0";
+    String url = "http://" + getIp() + "/set_alarm.cgi?next_url=alarm.htm&motion_armed=1&input_armed=0&motion_sensitivity=3&motion_compensation=1&http=0&http_url=&preset=0&iolinkage=1&mail=0&upload_interval=0&ioin_level=1&ioout_level=0&schedule_enable=0&schedule_sun_0=0&schedule_sun_1=0&schedule_sun_2=0&schedule_mon_0=0&schedule_mon_1=0&schedule_mon_2=0&schedule_tue_0=0&schedule_tue_1=0&schedule_tue_2=0&schedule_wed_0=0&schedule_wed_1=0&schedule_wed_2=0&schedule_thu_0=0&schedule_thu_1=0&schedule_thu_2=0&schedule_fri_0=0&schedule_fri_1=0&schedule_fri_2=0&schedule_sat_0=0&schedule_sat_1=0&schedule_sat_2=0";
     printDebug("Sending request to " + url);
     sendRequest(url);
 }
@@ -16,9 +16,22 @@ void HomeCCTV::enable()
 void HomeCCTV::disable()
 {
     printDebug("Disabling Home CCTV motion detection");
-    String url = "http://" + String(HOME_CCTV_IP) + "/set_alarm.cgi?next_url=alarm.htm&motion_armed=0&input_armed=0&motion_sensitivity=5&motion_compensation=0&iolinkage=0&mail=0&upload_interval=0&preset=0&http=0&http_url=&schedule_enable=0&schedule_sun_0=0&schedule_sun_1=0&schedule_sun_2=0&schedule_mon_0=0&schedule_mon_1=0&schedule_mon_2=0&schedule_tue_0=0&schedule_tue_1=0&schedule_tue_2=0&schedule_wed_0=0&schedule_wed_1=0&schedule_wed_2=0&schedule_thu_0=0&schedule_thu_1=0&schedule_thu_2=0&schedule_fri_0=0&schedule_fri_1=0&schedule_fri_2=0&schedule_sat_0=0&schedule_sat_1=0&schedule_sat_2=0";
+    String url = "http://" + getIp() + "/set_alarm.cgi?next_url=alarm.htm&motion_armed=0&input_armed=0&motion_sensitivity=5&motion_compensation=0&iolinkage=0&mail=0&upload_interval=0&preset=0&http=0&http_url=&schedule_enable=0&schedule_sun_0=0&schedule_sun_1=0&schedule_sun_2=0&schedule_mon_0=0&schedule_mon_1=0&schedule_mon_2=0&schedule_tue_0=0&schedule_tue_1=0&schedule_tue_2=0&schedule_wed_0=0&schedule_wed_1=0&schedule_wed_2=0&schedule_thu_0=0&schedule_thu_1=0&schedule_thu_2=0&schedule_fri_0=0&schedule_fri_1=0&schedule_fri_2=0&schedule_sat_0=0&schedule_sat_1=0&schedule_sat_2=0";
     printDebug("Sending request to " + url);
     sendRequest(url);
+}
+
+String HomeCCTV::getIp()
+{
+    String cctvIp = ConfigManager::getConfig("cctv-ip");
+    if (cctvIp == "")
+    {
+        printDebug("CCTV IP not set");
+        printDebug("Using default IP");
+        cctvIp = "192.168.1.100";
+        ConfigManager::setConfig("cctvIp", cctvIp);
+    }
+    return cctvIp;
 }
 
 void HomeCCTV::sendRequest(const String &url)
