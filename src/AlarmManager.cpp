@@ -125,7 +125,7 @@ AlarmState AlarmManager::getState()
     }
 }
 
-void AlarmManager::thiefDetection(Io io)
+void AlarmManager::thiefDetection(Io &io)
 {
     printDebug("Detecting thief");
     if (digitalRead(sirenPin) == HIGH)

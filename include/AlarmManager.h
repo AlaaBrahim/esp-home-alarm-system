@@ -23,7 +23,7 @@ public:
     static void trigger();
     static int readAnalog();
     static AlarmState getState();
-    static void thiefDetection(Io io);
+    static void thiefDetection(Io &io);
 
 private:
     // GPIO pins

@@ -85,9 +85,8 @@ void loop()
   }
   if (io.newCommandRecieved())
   {
-    String message = io.recieveCommand();
-    String issuer = io.getCommandIssuer();
-    String reply = commandManager.executeCommand(message, issuer);
+    Command command = io.recieveCommand();
+    String reply = commandManager.executeCommand(command);
     io.replyCommand(reply);
   }
   else

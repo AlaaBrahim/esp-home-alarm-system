@@ -3,12 +3,13 @@
 
 #include "Arduino.h"
 #include "TelegramHandler.h"
+#include "Command.h"
 
 class CommandManager
 {
 public:
     CommandManager();
-    String executeCommand(String command, String issuer);
+    String executeCommand(Command command);
 };
 
 #endif
