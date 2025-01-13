@@ -8,4 +8,6 @@
 
 #define HOME_CCTV_IP "192.168.1.12"
 
+#define CONFIG_FILE "config.json"
+
 #endif
