@@ -15,7 +15,7 @@ Command::Command(String command, String issuer)
     this->issuer = issuer;
 }
 
-bool Command::isAdmin()
+bool Command::isCommandIssuerAdmin()
 {
     if (this->issuer == "serial" || UserManager::isAdmin(this->issuer))
         return true;
@@ -23,7 +23,7 @@ bool Command::isAdmin()
     return false;
 }
 
-bool Command::isUser()
+bool Command::isCommandIssuerNormalUser()
 {
     if (this->issuer == "alexa" || UserManager::isUser(this->issuer))
         return true;
