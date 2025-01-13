@@ -17,7 +17,7 @@ public:
     Command(String command, CommandSource source, String issuer);
     Command(String command, CommandSource source);
     bool isCommandIssuerAdmin();
-    bool isCommandIssuerNormalUser();
+    bool isCommandIssuerRegisteredUser();
     String getCommand() { return command; }
     String getIssuer() { return issuer; }
     CommandSource getSource() { return source; }

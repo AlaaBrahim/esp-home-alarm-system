@@ -10,138 +10,129 @@
 
 CommandManager::CommandManager() {}
 
-String CommandManager::executeCommand(String command, String issuer)
+String CommandManager::executeCommand(Command command)
 {
-    command.toLowerCase();
-    command.trim();
 
-    issuer.toLowerCase();
-    issuer.trim();
-
-    bool isAdmin = false;
-
-    if (issuer == "")
-        return ("Unknown issuer");
-
-    if (issuer == "serial" || UserManager::isAdmin(issuer))
-        isAdmin = true;
-
-    if (!UserManager::isUser(issuer))
-        return ("Unauthorized user");
-
-    if (isAdmin)
+    if (!command.isCommandIssuerRegisteredUser())
     {
-        if (command.startsWith("print"))
+        return ("You are not authorized to perform this action");
+    }
+
+    String commandMessage = command.getCommand();
+
+    if (command.isCommandIssuerAdmin())
+    {
+        if (commandMessage.startsWith("print"))
         {
-            command.remove(0, 6);
-            return (command);
+            commandMessage.remove(0, 6);
+            return (commandMessage);
         }
-        else if (command.startsWith("debug"))
+        else if (commandMessage.startsWith("debug"))
         {
-            command.remove(0, 6);
-            if (command == "readanalog")
+            commandMessage.remove(0, 6);
+            if (commandMessage == "readanalog")
             {
                 return String(AlarmManager::readAnalog());
             }
-            return ("Debug command:" + command + " does not exist");
+            return ("Debug command:" + commandMessage + " does not exist");
         }
-        else if (command.startsWith("cat"))
+        else if (commandMessage.startsWith("cat"))
         {
-            command.remove(0, 4);
-            return FileManager::readFromFile(command);
+            commandMessage.remove(0, 4);
+            return FileManager::readFromFile(commandMessage);
         }
-        else if (command.startsWith("config"))
+        else if (commandMessage.startsWith("config"))
         {
-            command.remove(0, 7);
-            int spaceIndex = command.indexOf(" ");
-            String key = command.substring(0, spaceIndex);
-            command.remove(0, spaceIndex + 1);
-            String value = command;
+            commandMessage.remove(0, 7);
+            int spaceIndex = commandMessage.indexOf(" ");
+            String key = commandMessage.substring(0, spaceIndex);
+            commandMessage.remove(0, spaceIndex + 1);
+            String value = commandMessage;
             ConfigManager::setConfig(key, value);
             return ("Config set");
         }
-        else if (command.startsWith("getconfig"))
+        else if (commandMessage.startsWith("getconfig"))
         {
-            command.remove(0, 10);
-            return ConfigManager::getConfig(command);
+            commandMessage.remove(0, 10);
+            return ConfigManager::getConfig(commandMessage);
         }
-        else if (command.startsWith("removeconfig"))
+        else if (commandMessage.startsWith("removeconfig"))
         {
-            command.remove(0, 13);
-            ConfigManager::removeConfig(command);
+            commandMessage.remove(0, 13);
+            ConfigManager::removeConfig(commandMessage);
             return ("Config removed");
         }
-        else if (command.startsWith("listconfigs"))
+        else if (commandMessage.startsWith("listconfigs"))
         {
             return ConfigManager::getConfigs();
         }
-        else if (command.startsWith("write"))
+        else if (commandMessage.startsWith("write"))
         {
             // write filename file contents
-            command.remove(0, 6);
-            int spaceIndex = command.indexOf(" ");
-            String filename = command.substring(0, spaceIndex);
-            command.remove(0, spaceIndex + 1);
-            FileManager::writeToFile(filename, command);
+            commandMessage.remove(0, 6);
+            int spaceIndex = commandMessage.indexOf(" ");
+            String filename = commandMessage.substring(0, spaceIndex);
+            commandMessage.remove(0, spaceIndex + 1);
+            FileManager::writeToFile(filename, commandMessage);
             return ("Data written to file");
         }
-        else if (command.startsWith("append"))
+        else if (commandMessage.startsWith("append"))
         {
-            command.remove(0, 7);
-            int spaceIndex = command.indexOf(" ");
-            String filename = command.substring(0, spaceIndex);
-            command.remove(0, spaceIndex + 1);
-            FileManager::appendToFile(filename, command);
+            commandMessage.remove(0, 7);
+            int spaceIndex = commandMessage.indexOf(" ");
+            String filename = commandMessage.substring(0, spaceIndex);
+            commandMessage.remove(0, spaceIndex + 1);
+            FileManager::appendToFile(filename, commandMessage);
             return ("Data appended to file");
         }
-        else if (command.startsWith("rm"))
+        else if (commandMessage.startsWith("rm"))
         {
-            command.remove(0, 3);
-            FileManager::removeFile(command);
+            commandMessage.remove(0, 3);
+            FileManager::removeFile(commandMessage);
             return ("File removed");
         }
-        else if (command.startsWith("ls"))
+        else if (commandMessage.startsWith("ls"))
         {
-            command.remove(0, 3);
-            return FileManager::listFiles(command);
+            commandMessage.remove(0, 3);
+            return FileManager::listFiles(commandMessage);
         }
-        else if (command.startsWith("adduser"))
+        else if (commandMessage.startsWith("adduser"))
         {
             // adduser username id isAdmin: true/false
-            command.remove(0, 8);
+            commandMessage.remove(0, 8);
             User user;
-            user.name = command.substring(0, command.indexOf(" "));
-            command.remove(0, user.name.length() + 1);
-            user.id = command.substring(0, command.indexOf(" "));
-            command.remove(0, user.id.length() + 1);
-            user.isAdmin = command == "true";
+            user.name = commandMessage.substring(0, commandMessage.indexOf(" "));
+            commandMessage.remove(0, user.name.length() + 1);
+            user.id = commandMessage.substring(0, commandMessage.indexOf(" "));
+            commandMessage.remove(0, user.id.length() + 1);
+            user.isAdmin = commandMessage == "true";
 
             UserManager::addUser(user);
             return ("User added");
         }
-        else if (command.startsWith("deleteuser"))
+        else if (commandMessage.startsWith("deleteuser"))
         {
-            command.remove(0, 11);
-            UserManager::removeUser(command);
+            commandMessage.remove(0, 11);
+            UserManager::removeUser(commandMessage);
             return ("User deleted");
         }
 
-        else if (command.startsWith("isuser"))
+        else if (commandMessage.startsWith("isuser"))
         {
-            command.remove(0, 7);
-            return (UserManager::isUser(command) ? "User exists" : "User does not exist");
+            commandMessage.remove(0, 7);
+            return (UserManager::isUser(commandMessage) ? "User exists" : "User does not exist");
         }
-        else if (command.startsWith("isadmin"))
+        else if (commandMessage.startsWith("isadmin"))
         {
-            command.remove(0, 8);
-            return (UserManager::isAdmin(command) ? "User is admin" : "User is not admin");
+            commandMessage.remove(0, 8);
+            return (UserManager::isAdmin(commandMessage) ? "User is admin" : "User is not admin");
         }
-        else if (command.startsWith("getuser"))
+        else if (commandMessage.startsWith("getuser"))
         {
-            command.remove(0, 8);
-            return UserManager::getUser(command).name;
+            commandMessage.remove(0, 8);
+            return UserManager::getUser(commandMessage).name;
         }
-        else if (command.startsWith("listusers"))
+        else if (commandMessage.startsWith("listusers"))
         {
             printDebug("Getting users");
             int count;
@@ -156,32 +147,32 @@ String CommandManager::executeCommand(String command, String issuer)
         }
     }
 
-    if (command.startsWith("arm"))
+    if (commandMessage.startsWith("arm"))
     {
         AlarmManager::arm();
         return ("Alarm armed");
     }
-    else if (command.startsWith("disarm"))
+    else if (commandMessage.startsWith("disarm"))
     {
         AlarmManager::disarm();
         return ("Alarm disarmed");
     }
-    else if (command.startsWith("scream"))
+    else if (commandMessage.startsWith("scream"))
     {
         AlarmManager::scream();
         return ("Alarm screaming");
     }
-    else if (command.startsWith("mute"))
+    else if (commandMessage.startsWith("mute"))
     {
         AlarmManager::mute();
         return ("Alarm muted");
     }
-    else if (command.startsWith("trigger"))
+    else if (commandMessage.startsWith("trigger"))
     {
         AlarmManager::trigger();
         return ("Alarm triggered");
     }
-    else if (command.startsWith("getstate"))
+    else if (commandMessage.startsWith("getstate"))
     {
         AlarmState state = AlarmManager::getState();
         if (state == ARMED)
@@ -192,12 +183,12 @@ String CommandManager::executeCommand(String command, String issuer)
             return ("Alarm is arming");
         return ("Unknown state");
     }
-    else if (command.startsWith("enablecctvhome"))
+    else if (commandMessage.startsWith("enablecctvhome"))
     {
         HomeCCTV::enable();
         return ("Home CCTV enabled");
     }
-    else if (command.startsWith("disablecctvhome"))
+    else if (commandMessage.startsWith("disablecctvhome"))
     {
         HomeCCTV::disable();
         return ("Home CCTV disabled");

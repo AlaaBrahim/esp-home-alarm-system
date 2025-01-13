@@ -3,24 +3,29 @@
 
 #include "Arduino.h"
 #include "TelegramHandler.h"
-#include <ESPAsyncWebServer.h>
+#include <CircularBuffer.hpp>
+#include "Command.h"
 
 class Io
 {
 public:
+    Io(const Io &) = delete;
+    Io &operator=(const Io &) = delete;
     Io();
     void setup();
     bool newCommandRecieved();
-    String recieveCommand();
-    String getCommandIssuer();
+    Command recieveCommand();
     void replyCommand(String message);
     void broadcastMessage(String message);
+    void addCommand(String message, CommandSource source);
 
 private:
     TelegramHandler telegramHandler = TelegramHandler();
     bool serialRecieved = false;
     bool telegramRecieved = false;
-    // AsyncWebServer server(80);
+    bool manualCommandsRecieved = false;
+    CircularBuffer<Command, 10> commandQueue;
+    Command lastProcessedCommand;
 };
 
 #endif

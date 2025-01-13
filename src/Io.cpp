@@ -15,53 +15,39 @@ void Io::setup()
         Serial.begin(BAUD_RATE);
 }
 
-String Io::recieveCommand()
+Command Io::recieveCommand()
 {
-    if (SERIAL && serialRecieved)
-        return recieveSerial();
-    if (TELEGRAM && telegramRecieved)
-        return telegramHandler.getNewMessage();
-    return "";
-}
-
-String Io::getCommandIssuer()
-{
-    if (SERIAL && serialRecieved)
-        return "serial";
-    if (TELEGRAM && telegramRecieved)
-        return telegramHandler.getNewMessageChatID();
-    return "";
+    Command command = commandQueue.pop();
+    this->lastProcessedCommand = command;
+    return command;
 }
 
 bool Io::newCommandRecieved()
 {
     if (SERIAL && newSerialRecieved())
     {
-        serialRecieved = true;
-        telegramRecieved = false;
-        return true;
+        Command command = Command(recieveSerial(), CommandSource::SERIAL_COMMAND);
+        commandQueue.unshift(command);
     }
 
     if (TELEGRAM && telegramHandler.newMessageExists())
     {
-        telegramRecieved = true;
-        serialRecieved = false;
-        return true;
+        Command command = Command(telegramHandler.getNewMessage(), CommandSource::TELEGRAM_COMMAND, telegramHandler.getNewMessageChatID());
+        commandQueue.unshift(command);
     }
-    return false;
+    return !commandQueue.isEmpty();
 }
 
 void Io::replyCommand(String message)
 {
-    if (SERIAL && serialRecieved)
+    if (lastProcessedCommand.getSource() == CommandSource::SERIAL_COMMAND)
     {
         print(message);
-        serialRecieved = false;
     }
-    if (TELEGRAM && telegramRecieved)
+
+    if (lastProcessedCommand.getSource() == CommandSource::TELEGRAM_COMMAND)
     {
         telegramHandler.replyToMessage(message);
-        telegramRecieved = false;
     }
 }
 
@@ -78,4 +64,10 @@ void Io::broadcastMessage(String message)
         String *users = UserManager::getUsers(count);
         telegramHandler.broadcastTelegramMessage(message, users, count);
     }
+}
+
+void Io::addCommand(String message, CommandSource source)
+{
+    Command command(message, source);
+    commandQueue.unshift(command);
 }

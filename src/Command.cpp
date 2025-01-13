@@ -32,7 +32,7 @@ bool Command::isCommandIssuerAdmin()
     return false;
 }
 
-bool Command::isCommandIssuerNormalUser()
+bool Command::isCommandIssuerRegisteredUser()
 {
     if (this->source == CommandSource::ALEXA_COMMAND)
         return true;
