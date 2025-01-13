@@ -36,6 +36,10 @@ String ConfigManager::getConfig(String key)
     {
         deserializeJson(doc, configs);
     }
+    if (!doc["configs"].containsKey(key))
+    {
+        return "";
+    }
     JsonObject config = doc["configs"].as<JsonObject>();
     return config[key];
 }
