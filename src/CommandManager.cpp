@@ -22,6 +22,10 @@ String CommandManager::executeCommand(String command)
     else if (command.startsWith("debug"))
     {
         command.remove(0, 6);
+        if (command == "readAnalog")
+        {
+           return String(AlarmManager::readAnalog());
+        }
         return ("debugging " + command);
     }
     else if (command.startsWith("cat"))

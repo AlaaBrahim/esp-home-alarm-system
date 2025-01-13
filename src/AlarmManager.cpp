@@ -64,6 +64,14 @@ void AlarmManager::trigger()
     digitalWrite(doorPin, LOW);
 }
 
+int AlarmManager::readAnalog()
+{
+    printDebug("Reading analog pin" + String(analogPin) + "value");
+    int analogValue = analogRead(analogPin);
+    printDebug("Analog value: " + String(analogValue));
+    return analogValue;
+}
+
 AlarmState AlarmManager::getState()
 {
     printDebug("Getting the alarm state");
