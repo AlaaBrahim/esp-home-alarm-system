@@ -16,6 +16,21 @@ void ConfigManager::setConfig(String key, String value)
     {
         deserializeJson(doc, configs);
     }
+    for (unsigned int i = 0; i < doc["configs"].size(); i++)
+    {
+        JsonObject config = doc["configs"][i].as<JsonObject>();
+        if (config.containsKey(key))
+        {
+            printDebug("Updating config: " + key + " to " + value);
+            config[key] = value;
+            doc.shrinkToFit();
+            String output;
+            serializeJson(doc, output);
+            FileManager::writeToFile(CONFIG_FILE, output);
+            return;
+        }
+    }
+
     JsonObject newConfig = doc["configs"].add<JsonObject>();
 
     printDebug("Setting config: " + key + " to " + value);
@@ -36,12 +51,16 @@ String ConfigManager::getConfig(String key)
     {
         deserializeJson(doc, configs);
     }
-    if (!doc["configs"].containsKey(key))
+    JsonArray configsArray = doc["configs"].as<JsonArray>();
+    for (unsigned int i = 0; i < configsArray.size(); i++)
     {
-        return "";
+        JsonObject config = configsArray[i].as<JsonObject>();
+        if (config.containsKey(key))
+        {
+            return config[key];
+        }
     }
-    JsonObject config = doc["configs"].as<JsonObject>();
-    return config[key];
+    return "";
 }
 
 void ConfigManager::removeConfig(String key)
@@ -52,7 +71,16 @@ void ConfigManager::removeConfig(String key)
     {
         deserializeJson(doc, configs);
     }
-    doc["configs"].remove(key);
+    JsonArray configsArray = doc["configs"].as<JsonArray>();
+    for (unsigned int i = 0; i < configsArray.size(); i++)
+    {
+        JsonObject config = configsArray[i].as<JsonObject>();
+        if (config.containsKey(key))
+        {
+            configsArray.remove(i);
+            break;
+        }
+    }
     doc.shrinkToFit();
     String output;
     serializeJson(doc, output);
