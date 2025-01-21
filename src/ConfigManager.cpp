@@ -36,12 +36,16 @@ String ConfigManager::getConfig(String key)
     {
         deserializeJson(doc, configs);
     }
-    if (!doc["configs"].containsKey(key))
+    JsonArray configsArray = doc["configs"].as<JsonArray>();
+    for (unsigned int i = 0; i < configsArray.size(); i++)
     {
-        return "";
+        JsonObject config = configsArray[i].as<JsonObject>();
+        if (config.containsKey(key))
+        {
+            return config[key];
+        }
     }
-    JsonObject config = doc["configs"].as<JsonObject>();
-    return config[key];
+    return "";
 }
 
 void ConfigManager::removeConfig(String key)
