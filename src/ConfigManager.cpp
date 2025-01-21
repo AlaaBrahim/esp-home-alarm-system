@@ -56,7 +56,16 @@ void ConfigManager::removeConfig(String key)
     {
         deserializeJson(doc, configs);
     }
-    doc["configs"].remove(key);
+    JsonArray configsArray = doc["configs"].as<JsonArray>();
+    for (unsigned int i = 0; i < configsArray.size(); i++)
+    {
+        JsonObject config = configsArray[i].as<JsonObject>();
+        if (config.containsKey(key))
+        {
+            configsArray.remove(i);
+            break;
+        }
+    }
     doc.shrinkToFit();
     String output;
     serializeJson(doc, output);
