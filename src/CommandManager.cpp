@@ -39,11 +39,11 @@ String CommandManager::executeCommand(String command, String issuer)
         else if (command.startsWith("debug"))
         {
             command.remove(0, 6);
-            if (command == "readAnalog")
+            if (command == "readanalog")
             {
                 return String(AlarmManager::readAnalog());
             }
-            return ("debugging " + command);
+            return ("Debug command:" + command + " does not exist");
         }
         else if (command.startsWith("cat"))
         {
@@ -71,7 +71,7 @@ String CommandManager::executeCommand(String command, String issuer)
             ConfigManager::removeConfig(command);
             return ("Config removed");
         }
-        else if (command.startsWith("getconfigs"))
+        else if (command.startsWith("listconfigs"))
         {
             return ConfigManager::getConfigs();
         }
